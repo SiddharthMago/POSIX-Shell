@@ -28,6 +28,9 @@ int main() {
     char homedir[1024];
     getcwd(homedir, sizeof(homedir));
 
+    char prevdir[1024];
+    getcwd(prevdir, sizeof(prevdir));
+
     while(1) {
 
         char curdir[1024];
@@ -39,7 +42,7 @@ int main() {
         }
         else if(checkdir == 2){
             char mydir[1024];
-            for(int i=strlen(homedir); i<=strlen(curdir); i++) {
+            for(int i = strlen(homedir); i <= strlen(curdir); i++) {
                 mydir[i-strlen(homedir)] = curdir[i];
             }
             printf("<%s@%s:%s>", username, hostname, mydir);
@@ -58,14 +61,42 @@ int main() {
         }
         else if(strcmp(token, "hop") == 0) {
             token = strtok(NULL, " ");
+            if(token == NULL) {
+                strcpy(prevdir, curdir);
+                chdir(homedir);
+            }
             while(token != NULL) {
-                if(strcmp(token, "~") == 0) chdir(homedir);
-                else chdir(token);
+                if(strcmp(token, "~") == 0) {
+                    strcpy(prevdir, curdir);
+                    chdir(homedir);
+                }
+                else if(strcmp(token, "-") == 0) {
+                    char temp[1024];
+                    strcpy(temp, curdir);
+                    chdir(prevdir);
+                    strcpy(prevdir, temp);
+                }
+                else {
+                    strcpy(prevdir, curdir);
+                    int i=0;
+                    if(token[0] == '~' || token[0] == '/') { // handles the case where the user enters ~ or / in the start new hop dir
+                        while(token[i] == '~' || token[i] == '/') i++;
+                        char temp[1024];
+                        int j = 0;
+                        while(j < strlen(token)) {
+                            temp[j] = token[i + j];
+                            j++;
+                        }
+                        temp[j] = '\0';
+
+                        strcpy(token, temp);
+                    }
+                    chdir(token);
+                }
                 token = strtok(NULL, " ");
             }
             printf("\n%s\n\n", getcwd(curdir, sizeof(curdir)));
         }
-
     }    
     return 0;
 }
