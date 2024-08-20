@@ -43,17 +43,32 @@ int main() {
         int checkdir = ishomedir(curdir, homedir);
 
         if(checkdir == 1) {
-            printf("<%s@%s:~>", username, hostname);
+            // printf("<%s@%s:~>", username, hostname);
+            printf("<");
+            printf("\033[0;34m");
+            printf("%s", username);
+            printf("\033[0m");
+            printf("@%s:~>", hostname);
         }
         else if(checkdir == 2){
             char mydir[1024];
             for(int i = strlen(homedir); i <= strlen(curdir); i++) {
                 mydir[i-strlen(homedir)] = curdir[i];
             }
-            printf("<%s@%s:%s>", username, hostname, mydir);
+            // printf("<%s@%s:~/%s>", username, hostname, mydir);
+            printf("<");
+            printf("\033[0;34m");
+            printf("%s", username);
+            printf("\033[0m");
+            printf("@%s:%s>", hostname, mydir);
         }
         else {
-            printf("<%s@%s:%s>", username, hostname, curdir);
+            // printf("<%s@%s:%s>", username, hostname, curdir);
+            printf("<");
+            printf("\033[0;34m");
+            printf("%s", username);
+            printf("\033[0m");
+            printf("@%s:%s>", hostname, curdir);
         }
 
         char command[1024];
@@ -110,7 +125,7 @@ int main() {
                 DIR *dr = opendir("."); 
     
                 if (dr == NULL) { 
-                    printf("Could not open current directory" ); 
+                    printf("Could not open current directory\n"); 
                     continue;
                 } 
             
@@ -121,50 +136,64 @@ int main() {
             
             while(token != NULL) {
                 if(strcmp(token, "-a") == 0) {
-                    struct dirent *de; 
-                    DIR *dr = opendir("."); 
+                    token = strtok(NULL, " \t");
+
+                    struct dirent *de;
+                    DIR *dr;
+                    
+                    if(token == NULL) dr = opendir(".");
+                    else dr = opendir(token);
     
                     if (dr == NULL) { 
-                        printf("Could not open current directory" ); 
+                        printf("Could not open current directory\n");
                         continue;
                     } 
             
                     while ((de = readdir(dr)) != NULL) printf("%s\n", de->d_name); 
-            
+               
                     closedir(dr);
                 }
-                else if(strcmp(token, "-l") == 0) {
-                    struct dirent *de; 
-                    DIR *dr = opendir("."); 
-    
-                    if (dr == NULL) { 
-                        printf("Could not open current directory" ); 
+                else if (strcmp(token, "-l") == 0) {
+                    token = strtok(NULL, " \t");
+
+                    struct dirent *de;
+                    DIR *dr;
+
+                    if (token == NULL) dr = opendir(".");
+                    else dr = opendir(token);
+
+                    if (dr == NULL) {
+                        printf("Could not open current directory\n"); 
                         continue;
-                    } 
-            
+                    }
+
                     while ((de = readdir(dr)) != NULL) {
-                        if(de->d_name[0] != '.') {
+                        if (de->d_name[0] != '.') {
                             char path[1024];
-                            snprintf(path, sizeof(path), "%s/%s", curdir, de->d_name);
+                            snprintf(path, sizeof(path), "%s/%s", token ? token : ".", de->d_name);
                             struct stat file_stat;
                             if (stat(path, &file_stat) == 0) {
                                 printf("File: %s\n", de->d_name);
-                                printf("Size: %lld bytes\n", file_stat.st_size);
+                                printf("Size: %lld bytes\n", (long long)file_stat.st_size);
                                 printf("Permissions: %o\n", file_stat.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO));
                                 printf("Last modified: %s", ctime(&file_stat.st_mtime));
                                 printf("\n");
+                            } 
+                            else {
+                                printf("Could not get file status\n");
                             }
                         }
                     }
-            
+
                     closedir(dr);
                 }
+
                 else if(strcmp(token, "~") == 0) {
                     struct dirent *de; 
                     DIR *dr = opendir(homedir); 
     
                     if (dr == NULL) { 
-                        printf("Could not open current directory" ); 
+                        printf("Could not open current directory\n"); 
                         continue;
                     } 
             
@@ -177,7 +206,7 @@ int main() {
                     DIR *dr = opendir(token); 
     
                     if (dr == NULL) { 
-                        printf("Could not open current directory" ); 
+                        printf("Could not open current directory\n"); 
                         continue;
                     } 
             
