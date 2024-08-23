@@ -155,11 +155,24 @@ int main() {
                 if(aflag == true || lflag == true) {
                     struct dirent *de;
                     DIR *dr;
+
                     token = strtok(NULL, " \t");
+                    
+                    char path[1024];
+
                     if(token != NULL && token[0] == '-') continue;
-                    if(token == NULL) dr = opendir(".");
-                    else if(strcmp(token, "~") == 0) dr = opendir(homedir);
-                    else dr = opendir(token);
+                    if(token == NULL) {
+                        dr = opendir(".");
+                        strcpy(path, ".");
+                    }
+                    else if(strcmp(token, "~") == 0) {
+                        dr = opendir(homedir);
+                        snprintf(path, sizeof(path), "%s", homedir);
+                    }
+                    else {
+                        dr = opendir(token);
+                        snprintf(path, sizeof(path), "%s", token);
+                    }
     
                     if (dr == NULL) { 
                         printf("Could not open current directory\n");
@@ -169,10 +182,10 @@ int main() {
                     if(aflag == true && lflag == true) {
                         printf("Both a and l flags are present\n");
                         while ((de = readdir(dr)) != NULL) {
-                            char path[1024];
-                            snprintf(path, sizeof(path), "%s/%s", token ? token : ".", de->d_name);
+                            char full_path[1024];
+                            snprintf(full_path, sizeof(full_path), "%s/%s", path, de->d_name);
                             struct stat file_stat;
-                            if (stat(path, &file_stat) == 0) {
+                            if (stat(full_path, &file_stat) == 0) {
                                 printf("File: %s\n", de->d_name);
                                 printf("Size: %lld bytes\n", (long long)file_stat.st_size);
                                 printf("Permissions: %o\n", file_stat.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO));
@@ -196,10 +209,10 @@ int main() {
                         printf("l flag is present\n");
                         while ((de = readdir(dr)) != NULL) {
                             if (de->d_name[0] != '.') {
-                                char path[1024];
-                                snprintf(path, sizeof(path), "%s/%s", token ? token : ".", de->d_name);
+                                char full_path[1024];
+                                snprintf(full_path, sizeof(full_path), "%s/%s", path, de->d_name);
                                 struct stat file_stat;
-                                if (stat(path, &file_stat) == 0) {
+                                if (stat(full_path, &file_stat) == 0) {
                                     printf("File: %s\n", de->d_name);
                                     printf("Size: %lld bytes\n", (long long)file_stat.st_size);
                                     printf("Permissions: %o\n", file_stat.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO));
