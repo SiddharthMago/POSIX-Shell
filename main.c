@@ -25,6 +25,63 @@ int ishomedir(char* curdir, char* homedir) {
     else return 2;
 }
 
+void print_with_color(const char *filename, const struct stat *file_stat) {
+    if (S_ISDIR(file_stat->st_mode)) printf("\033[0;34m%s\033[0m\n", filename);  // Blue for directories
+    else if (file_stat->st_mode & S_IXUSR) printf("\033[0;32m%s\033[0m\n", filename);  // Green for executables
+    else printf("%s\n", filename);  // White for regular files
+}
+
+void print_file_permissions(mode_t mode) {
+    // File Type
+    char file_type = '-';
+    if (S_ISDIR(mode)) file_type = 'd';
+    else if (S_ISLNK(mode)) file_type = 'l';
+    else if (S_ISCHR(mode)) file_type = 'c';
+    else if (S_ISBLK(mode)) file_type = 'b';
+    else if (S_ISFIFO(mode)) file_type = 'p';
+    else if (S_ISSOCK(mode)) file_type = 's';
+    printf("%c", file_type);
+
+    // Owner Permissions
+    printf("%c", (mode & S_IRUSR) ? 'r' : '-');
+    printf("%c", (mode & S_IWUSR) ? 'w' : '-');
+    printf("%c", (mode & S_IXUSR) ? 'x' : '-');
+
+    // Group Permissions
+    printf("%c", (mode & S_IRGRP) ? 'r' : '-');
+    printf("%c", (mode & S_IWGRP) ? 'w' : '-');
+    printf("%c", (mode & S_IXGRP) ? 'x' : '-');
+
+    // Other Permissions
+    printf("%c", (mode & S_IROTH) ? 'r' : '-');
+    printf("%c", (mode & S_IWOTH) ? 'w' : '-');
+    printf("%c ", (mode & S_IXOTH) ? 'x' : '-');
+}
+
+void print_file_details(const char *filename, const struct stat *file_stat) {
+    // Print permissions
+    print_file_permissions(file_stat->st_mode);
+
+    // Print number of hard links
+    printf("%ld ", (long)file_stat->st_nlink);
+
+    // Print owner and group names
+    struct passwd *pw = getpwuid(file_stat->st_uid);
+    struct group  *gr = getgrgid(file_stat->st_gid);
+    printf("%s %s ", pw->pw_name, gr->gr_name);
+
+    // Print file size
+    printf("%5lld ", (long long)file_stat->st_size);
+
+    // Print last modified time
+    char time_str[20];
+    struct tm *time_info = localtime(&file_stat->st_mtime);
+    strftime(time_str, sizeof(time_str), "%b %d %H:%M", time_info);
+    printf("%s ", time_str);
+
+    print_with_color(filename, file_stat);
+}
+
 int main() {
     char* username = getenv("USER");
     char hostname[1024];
@@ -121,19 +178,30 @@ int main() {
         else if(strcmp(token, "reveal") == 0) {
             bool lflag = false;
             bool aflag = false;
-            
+            char path[1024];
+
             token = strtok(NULL, " \t");
 
             if(token == NULL) {
+                struct stat file_stat;
                 struct dirent *de; 
                 DIR *dr = opendir("."); 
-    
+                strcpy(path, ".");
+                
                 if (dr == NULL) { 
                     printf("Could not open current directory\n"); 
                     break;
                 } 
             
-                while ((de = readdir(dr)) != NULL) if(de->d_name[0] != '.') printf("%s\n", de->d_name); 
+                while ((de = readdir(dr)) != NULL) {
+                    if(de->d_name[0] != '.') {
+                        char full_path[1024];
+                        snprintf(full_path, sizeof(full_path), "%s/%s", path, de->d_name);
+                        if (stat(full_path, &file_stat) == 0) {
+                            print_with_color(de->d_name, &file_stat);
+                        }
+                    }
+                }
             
                 closedir(dr);
             }
@@ -153,22 +221,24 @@ int main() {
                 }
 
                 if(aflag == true || lflag == true) {
+                    struct stat file_stat;
                     struct dirent *de;
                     DIR *dr;
 
                     token = strtok(NULL, " \t");
-                    
-                    char path[1024];
 
                     if(token != NULL && token[0] == '-') continue;
+
                     if(token == NULL) {
                         dr = opendir(".");
                         strcpy(path, ".");
                     }
+
                     else if(strcmp(token, "~") == 0) {
                         dr = opendir(homedir);
                         snprintf(path, sizeof(path), "%s", homedir);
                     }
+
                     else {
                         dr = opendir(token);
                         snprintf(path, sizeof(path), "%s", token);
@@ -179,57 +249,37 @@ int main() {
                         break;
                     }
 
-                    if(aflag == true && lflag == true) {
-                        printf("Both a and l flags are present\n");
-                        while ((de = readdir(dr)) != NULL) {
-                            char full_path[1024];
-                            snprintf(full_path, sizeof(full_path), "%s/%s", path, de->d_name);
-                            struct stat file_stat;
-                            if (stat(full_path, &file_stat) == 0) {
-                                printf("File: %s\n", de->d_name);
-                                printf("Size: %lld bytes\n", (long long)file_stat.st_size);
-                                printf("Permissions: %o\n", file_stat.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO));
-                                printf("Last modified: %s", ctime(&file_stat.st_mtime));
-                                printf("\n");
-                            } 
-                            else {
-                                printf("Could not get file status\n");
+                    while ((de = readdir(dr)) != NULL) {
+                        char full_path[1024];
+                        snprintf(full_path, sizeof(full_path), "%s/%s", path, de->d_name);
+
+                        if (stat(full_path, &file_stat) == 0) {
+
+                            if(aflag == true && lflag == true) {
+                                print_file_details(de->d_name, &file_stat);
                             }
-                        }
-                        closedir(dr);
-                    }
 
-                    else if(aflag == true) {
-                        printf("a flag is present\n");
-                        while ((de = readdir(dr)) != NULL) printf("%s\n", de->d_name);
-                        closedir(dr);
-                    }
-
-                    else if(lflag == true) {
-                        printf("l flag is present\n");
-                        while ((de = readdir(dr)) != NULL) {
-                            if (de->d_name[0] != '.') {
-                                char full_path[1024];
-                                snprintf(full_path, sizeof(full_path), "%s/%s", path, de->d_name);
-                                struct stat file_stat;
-                                if (stat(full_path, &file_stat) == 0) {
-                                    printf("File: %s\n", de->d_name);
-                                    printf("Size: %lld bytes\n", (long long)file_stat.st_size);
-                                    printf("Permissions: %o\n", file_stat.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO));
-                                    printf("Last modified: %s", ctime(&file_stat.st_mtime));
-                                    printf("\n");
-                                } 
-                                else {
-                                    printf("Could not get file status\n");
+                            else if (lflag == true) {
+                                if(de->d_name[0] != '.') {
+                                    print_file_details(de->d_name, &file_stat);
                                 }
                             }
+
+                            else if (aflag == true) {
+                                print_with_color(de->d_name, &file_stat);
+                            }
+
                         }
-                        closedir(dr);
+
+                        else {
+                            printf("Could not get file status for %s\n", de->d_name);
+                        }
                     }
                 }
 
                 else {
-                    struct dirent *de; 
+                    struct stat file_stat;
+                    struct dirent *de;
                     DIR *dr;
 
                     if(token == NULL) dr = opendir(".");
@@ -240,12 +290,25 @@ int main() {
                         printf("Could not open current directory\n"); 
                         break;
                     } 
-            
-                    while ((de = readdir(dr)) != NULL) if(de->d_name[0] != '.') printf("%s\n", de->d_name); 
+                    
+                    while ((de = readdir(dr)) != NULL) {
+
+                        if(de->d_name[0] != '.') {
+                            char full_path[1024];
+                            snprintf(full_path, sizeof(full_path), "%s/%s", token ? token : ".", de->d_name);
+
+                            if (stat(full_path, &file_stat) == 0) {
+                                print_with_color(de->d_name, &file_stat);
+                            }
+                        }
+
+                    }
             
                     closedir(dr);
                 }
+
                 token = strtok(NULL, " \t");
+
             }    
         }
     }
