@@ -84,6 +84,8 @@ void print_file_details(const char *filename, const struct stat *file_stat) {
 
 int main() {
     char* username = getenv("USER");
+    // char* username = getlogin();
+
     char hostname[1024];
     gethostname(hostname, sizeof(hostname));
 
@@ -175,7 +177,7 @@ int main() {
             printf("\n%s\n\n", getcwd(curdir, sizeof(curdir)));
         }
         
-        else if(strcmp(token, "reveal") == 0) {
+        else if(strcmp(token, "reveal") == 0) { // test "reveal          ~"
             bool lflag = false;
             bool aflag = false;
             char path[1024];
