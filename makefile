@@ -1,0 +1,2 @@
+main: code/functions.h code/main.c code/main-logic.c code/hop.c code/reveal.c code/log.c code/misc.c code/syscom.c code/proclore.c code/seek.c code/alias.c code/activities-ping.c code/redirection-piping.c code/neonate.c code/networking.c
+	gcc code/main.c code/main-logic.c code/hop.c code/reveal.c code/log.c code/misc.c code/syscom.c code/proclore.c code/seek.c code/alias.c code/activities-ping.c code/redirection-piping.c code/neonate.c code/networking.c -lm
