@@ -77,7 +77,7 @@ int main() {
         char** alias_file_text = alias_to_array_helper(alias_file_path, &alias_line_count);
 
         if(log_file_text == NULL || alias_file_text == NULL) {
-            printf("ERROR: log_file_text and/or alias_file_text is NULL\n");
+            printe("ERROR: log_file_text and/or alias_file_text is NULL\n");
             break;
         }
 

@@ -58,7 +58,7 @@ void hop_function(char* command, char* homedir, char* curdir, char* prevdir) {
                 strcpy(token, temp);
             }
             if(chdir(token) == -1) {
-                printf("ERROR: invalid hop command\n");
+                printe("ERROR: invalid hop command\n");
             }
         }
         printf("%s\n", getcwd(tempdir, sizeof(tempdir)));

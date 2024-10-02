@@ -224,11 +224,11 @@ void command_handler(char* input, char** alias_file_text, char** log_file_text) 
             char* token = strtok(command, " \t");
             token = strtok(NULL, " \t");
             if(token == NULL) {
-                printf("ERROR: missing argument\n");
+                printe("ERROR: missing argument\n");
             }
             else {
                 pid_t pid = atoi(token);
-                if(pid == 0) printf("ERROR: invalid argument\n");
+                if(pid == 0) printe("ERROR: invalid argument\n");
                 else {
                     char* temp = (char*)malloc(MAX_LENGTH * sizeof(char));
                     snprintf(temp, MAX_LENGTH, "ping %i 18", pid);
@@ -246,12 +246,12 @@ void command_handler(char* input, char** alias_file_text, char** log_file_text) 
             char* token = strtok(command, " \t");
             token = strtok(NULL, " \t");
             if(token == NULL) {
-                printf("ERROR: missing argument\n");
+                printe("ERROR: missing argument\n");
             }
             else {
                 int pid = atoi(token);
                 if(pid == 0) {
-                    printf("ERROR: invalid argument\n");
+                    printe("ERROR: invalid argument\n");
                 }
                 else {
                     char* temp = (char*)malloc(MAX_LENGTH * sizeof(char));

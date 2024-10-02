@@ -13,7 +13,7 @@ void syscom_function(char* command, bool background, bool* print_CLI_flag, char*
 
         execlp("sh", "sh", "-c", command, NULL);
 
-        printf("exec failed: %s\n", strerror(errno));
+        printf("\033[0;31mERROR: exec failed - %s\n\033[0m", strerror(errno));
         exit(1);
     }
     else if(pid > 0) {
@@ -45,7 +45,7 @@ void syscom_function(char* command, bool background, bool* print_CLI_flag, char*
         }
     }
     else {
-        printf("fork failed: %s\n", strerror(errno));
+        printf("\033[0;31mERROR: fork failed - %s\n\033[0m", strerror(errno));
     }
     printnl();
 }

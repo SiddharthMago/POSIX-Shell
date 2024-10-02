@@ -24,7 +24,7 @@ char* redirection_function(char* command) {
     file_name = trim(file_name);
 
     if(file_name == NULL) {
-        printf("\nERROR: No file name given\n\n");
+        printe("\nERROR: No file name given\n\n");
         redirection_flag = false;
         free(file_name);
         return command;
@@ -47,10 +47,19 @@ void handle_pipe(char* input, char** alias_file_text, char** log_file_text) {
 
     input = trim(input);
     if(input[0] == '|' || input[strlen(input) - 1] == '|') {
-        printf("ERROR: Incomplete pipe sequence.\n");
+        printe("ERROR: Incomplete pipe sequence.\n");
         redirection_flag = false;
         printnl();
         return;
+    }
+    
+    for(int i=0; i<strlen(input) - 1; i++) {
+        if(input[i] == '|' && input[i + 1] == '|') {
+            printe("ERROR: Invalid pipe sequence.\n");
+            redirection_flag = false;
+            printnl();
+            return;
+        }
     }
 
     char* pipe_saveptr;
@@ -72,7 +81,7 @@ void handle_pipe(char* input, char** alias_file_text, char** log_file_text) {
     for(int i=0; i<pipe_count; i++) {
         if(i < pipe_count - 1) {
             if(pipe(pipe_fd) == -1) {
-                printf("ERROR: pipe failed\n");
+                printe("ERROR: pipe failed\n");
                 exit(1);
             }
         }
@@ -106,7 +115,7 @@ void handle_pipe(char* input, char** alias_file_text, char** log_file_text) {
         }
 
         else {
-            printf("ERROR: piping fork failed\n");
+            printe("ERROR: piping fork failed\n");
             exit(1);
         }
     }

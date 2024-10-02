@@ -53,11 +53,11 @@ void ctrlc(int sig) {
             latest_fg_proc.pid = -1;
         }
         else {
-            printf("ERROR: Could not send signal to foreground process %i\n", latest_fg_proc.pid);
+            printf("\033[0;31mERROR: Could not send signal to foreground process %i\n\n\033[0m", latest_fg_proc.pid);
         }
     }
     else {
-        printf("ERROR: No foreground process to interrupt.\n");
+        printe("ERROR: No foreground process to interrupt.\n");
     }
     printnl();
 }
@@ -69,7 +69,7 @@ void kill_all_processes() {
     //         printf("Killed process with PID %d\n", processes[i].pid);
     //     }
     //     else {
-    //         printf("ERROR: Failed to kill process with PID %d\n", processes[i].pid);
+    //         printe("ERROR: Failed to kill process with PID %d\n", processes[i].pid);
     //     }
     // }
     // printnl();
@@ -93,11 +93,11 @@ void ctrlz(int sig) {
             // tcsetpgrp(STDIN_FILENO, getpid());
         }
         else {
-            printf("ERROR: Could not send signal to process %i\n", latest_fg_proc.pid);
+            printf("\033[0;31mERROR: Could not send signal to process %i\n\033[0m", latest_fg_proc.pid);
         }
     }
     else {
-        printf("ERROR: No foreground process to interrupt.\n");
+        printe("ERROR: No foreground process to interrupt.\n");
     }
     printnl();
 }
@@ -143,7 +143,7 @@ char process_state(pid_t pid) {
 
 void add_process(pid_t pid, const char* command) {
     if(process_count >= MAX_PROCESSES) {
-        printf("\nERROR: Maximum number of processes reached\n\n");
+        printe("\nERROR: Maximum number of processes reached\n\n");
         return;
     }
     processes[process_count].pid = pid;
@@ -182,7 +182,7 @@ void ping_function(char* command) {
     char* token = strtok(command, " ");
     token = strtok(NULL, " ");
     if(token == NULL) {
-        printf("ERROR: PID not given\n");
+        printe("ERROR: PID not given\n");
         printnl();
         return;
     }
@@ -190,7 +190,7 @@ void ping_function(char* command) {
 
     token = strtok(NULL, " ");
     if(token == NULL) {
-        printf("ERROR: Ping type not given\n");
+        printe("ERROR: Ping type not given\n");
         printnl();
         return;
     }
@@ -199,7 +199,7 @@ void ping_function(char* command) {
     ping_type = ping_type % MAX_SIGNALS;
 
     if(ping_type <= 0) {
-        printf("ERROR: Invalid ping type\n\n");
+        printe("ERROR: Invalid ping type\n\n");
         printnl();
         return;
     }
@@ -207,9 +207,9 @@ void ping_function(char* command) {
     // printf("%i %i\n", pid, ping_type);
 
     if(kill(pid, ping_type) == -1) {
-        if(errno == ESRCH) printf("ERROR: No such process found.\n");
-        else if(errno == EINVAL) printf("ERROR: Invalid signal number.\n");
-        else printf("ERROR: Could not send signal to process %i: %s\n", pid, strerror(errno));
+        if(errno == ESRCH) printe("ERROR: No such process found.\n");
+        else if(errno == EINVAL) printe("ERROR: Invalid signal number.\n");
+        else printf("\033[0;31mERROR: Could not send signal to process %i: %s\n\033[0m", pid, strerror(errno));
     }
     else printf("Sent signal %i to process with pid %i\n", ping_type, pid);
     printnl();

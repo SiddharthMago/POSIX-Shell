@@ -86,3 +86,9 @@ char* trim(char* str) {
 void printnl() {
     if(redirection_flag == false) printf("\n");
 }
+
+void printe(char* error_message) {
+    if(redirection_flag == false) {
+        printf("\033[0;31m%s\033[0m", error_message);
+    }
+}

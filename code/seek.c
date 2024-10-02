@@ -23,7 +23,7 @@ int display_info(const char *fpath, const struct stat *sb, int typeflag, struct 
                 if(typeflag == FTW_F) {
                     // Check if the directory has read permissions
                     if(access(fpath, R_OK) != 0) {
-                        printf("ERROR : Missing permissions for task!\n");
+                        printe("ERROR : Missing permissions for task!\n");
                         return 1;
                     }
                     else {
@@ -42,13 +42,13 @@ int display_info(const char *fpath, const struct stat *sb, int typeflag, struct 
                 else if(typeflag == FTW_D) {
                     // Check if the directory has execute permissions
                     if(access(fpath, X_OK) != 0) {
-                        printf("ERROR : Missing permissions for task!\n");
+                        printe("ERROR : Missing permissions for task!\n");
                         return 1;
                     }
                     else {
                         // chdir(fpath);
                         if(chdir(fpath) == 0) printf("Changed directory to: %s\n", fpath);
-                        else printf("ERROR : chdir");
+                        else printe("ERROR : chdir");
                         return 1;
                     }
                 }
@@ -80,7 +80,7 @@ void seek_function(char *command) {
             else if(token[i] == 'f') fflag = true;
             else if(token[i] == 'e') eflag = true;
             else {
-                printf("ERROR : Invalid flag: -%c\n", token[i]);
+                printf("\033[0;31mERROR : Invalid flag: -%c\n\033[0m", token[i]);
                 printnl();
                 return;
             }
@@ -89,13 +89,13 @@ void seek_function(char *command) {
     }
 
     if(token == NULL) {
-        printf("ERROR: No search target provided\n");
+        printe("ERROR: No search target provided\n");
         printnl();
         return;
     }
 
     if(fflag && dflag) {
-        printf("ERROR : Invalid flags!\n");
+        printe("ERROR : Invalid flags!\n");
         printnl();
         return;
     }
@@ -112,12 +112,12 @@ void seek_function(char *command) {
     singlefd = eflag;
 
     if (nftw(searchdir, display_info, 20, FTW_PHYS) == -1) {
-        printf("ERROR : nftw error\n");
+        printe("ERROR : nftw error\n");
         exit(EXIT_FAILURE);
     }
 
     if (match_count == 0) {
-        printf("ERROR : No match found!\n");
+        printe("ERROR : No match found!\n");
     }
     printnl();
 }

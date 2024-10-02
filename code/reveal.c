@@ -75,7 +75,7 @@ void reveal_function(char* command, char* homedir) {
             if(token[i] == 'a') aflag = true;
             else if(token[i] == 'l') lflag = true;
             else {
-                printf("Invalid flag: -%c\n", token[i]);
+                printf("\033[0;31mERROR: Invalid flag: -%c\n\033[0m", token[i]);
                 printnl();
                 return;
             }
@@ -91,7 +91,7 @@ void reveal_function(char* command, char* homedir) {
     struct dirent *de;
     DIR *dr = opendir(path);
     if(dr == NULL) {
-        printf("Could not open directory %s\n", path);
+        printf("\033[0;31mERROR: Could not open directory %s\n\033[0m", path);
         printnl();
         return;
     }
@@ -120,7 +120,7 @@ void reveal_function(char* command, char* homedir) {
             else print_with_color(filenames[i], &file_stat);
         }
         else {
-            printf("Could not get file status for %s\n", filenames[i]);
+            printf("\033[0;31mERROR: Could not get file status for %s\n\033[0m", filenames[i]);
         }
 
         free(filenames[i]);

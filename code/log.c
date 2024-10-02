@@ -5,7 +5,7 @@ char* log_file_name = "log.txt";
 char** log_to_array_helper(char* log_file_path, int* log_line_count) {
     FILE* log_file = fopen(log_file_path, "r");
     if(log_file == NULL) {
-        printf("ERROR: Failed to open log file for reading\n");
+        printe("ERROR: Failed to open log file for reading\n");
         return NULL;
     }
     
@@ -37,7 +37,7 @@ void log_file_helper(char* command, char** log_file_text, int log_line_count, ch
 
         FILE* log_file = fopen(log_file_path, "w");
         if(log_file == NULL) {
-            printf("ERROR: Failed to open log file for writing\n");
+            printe("ERROR: Failed to open log file for writing\n");
             return;
         }
 
@@ -78,7 +78,7 @@ void purge_log(char* log_file_path) {
         printnl();
         return;
     }
-    printf("ERROR: Unable to open log file\n");
+    printe("ERROR: Unable to open log file\n");
     printnl();
 }
 
@@ -100,7 +100,7 @@ char* log_function(char* command, char* log_file_path, char** log_file_text, int
         if(token != NULL) {
             int num = atoi(token);
             if(num < 1 || num > 15) {
-                printf("\nERROR: Invalid execute log line\n\n");
+                printe("\nERROR: Invalid execute log line\n\n");
                 return NULL;
             }
             if (log_line_count - num >= 0) {
@@ -109,17 +109,17 @@ char* log_function(char* command, char* log_file_path, char** log_file_text, int
                 *log_execute_flag = true;
             }
             else {
-                printf("\nERROR: Log line number out of range\n\n");
+                printe("\nERROR: Log line number out of range\n\n");
             }
         }
         
         else {
-            printf("\nERROR: Execute line not provided in command\n\n");
+            printe("\nERROR: Execute line not provided in command\n\n");
         }
     }
 
     else {
-        printf("\nERROR: Invalid log command\n\n");
+        printe("\nERROR: Invalid log command\n\n");
     }
         
     return command;

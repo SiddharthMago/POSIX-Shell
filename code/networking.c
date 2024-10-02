@@ -5,7 +5,7 @@ void iMan_function(char* command) {
     char* token = strtok(command, " ");
     token = strtok(NULL, " ");
     if(token == NULL) {
-        printf("ERROR: No token specified\n");
+        printe("ERROR: No token specified\n");
         printnl();
         return;
     }
@@ -13,14 +13,14 @@ void iMan_function(char* command) {
     char* hostname = "man.he.net";
     struct hostent* server = gethostbyname(hostname);
     if(server == NULL) {
-        printf("Error: Unknown server host\n");
+        printe("Error: Unknown server host\n");
         printnl();
         return;
     }
 
     int socketret = socket(AF_INET, SOCK_STREAM, 0);
     if(socketret == -1) {
-        printf("ERROR: Socket failed\n");
+        printe("ERROR: Socket failed\n");
         printnl();
         return;
     }
@@ -32,7 +32,7 @@ void iMan_function(char* command) {
     memcpy(&server_addr.sin_addr.s_addr, server->h_addr, server->h_length);
 
     if(connect(socketret, (struct sockaddr *)&server_addr, sizeof(server_addr)) == -1) {
-        printf("ERROR: Could not connect to server\n");
+        printe("ERROR: Could not connect to server\n");
         close(socketret);
         printnl();
         return;
@@ -42,7 +42,7 @@ void iMan_function(char* command) {
     snprintf(request, MAX_LENGTH, "GET /?topic=%s&section=all HTTP/1.1\r\nHost: man.he.net\r\nUser-Agent: iMan/1.0\r\nConnection: close\r\n\r\n", token);
 
     if(send(socketret, request, strlen(request), 0) == -1) {
-        printf("ERROR: Could not send request to server\n");
+        printe("ERROR: Could not send request to server\n");
         close(socketret);
         printnl();
         return;
@@ -75,7 +75,7 @@ void iMan_function(char* command) {
         }
     }
 
-    if(bytes_received == -1) printf("ERROR: Did not recieve response from server\n");
+    if(bytes_received == -1) printe("ERROR: Did not recieve response from server\n");
 
     close(socketret);
     free(request);

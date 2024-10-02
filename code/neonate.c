@@ -61,19 +61,19 @@ void neonate_function(char* command) {
     char* token = strtok(command, " \t");
     token = strtok(NULL, " \t");
     if(token == NULL) {
-        printf("ERROR: missing command argument\n");
+        printe("ERROR: missing command argument\n");
         printnl();
         return;
     }
     token = strtok(NULL, " \t");
     if(token == NULL) {
-        printf("ERROR: missing flag argument\n");
+        printe("ERROR: missing flag argument\n");
         printnl();
         return;
     }
     int interval = atoi(token);
     if(interval == 0) {
-        printf("ERROR: invalid interval argument\n");
+        printe("ERROR: invalid interval argument\n");
         printnl();
         return;
     }
@@ -88,7 +88,7 @@ void neonate_function(char* command) {
 
         int pid = get_latest_PID();
         if(pid > 0) printf("latest pid : %i\n", pid);
-        else printf("ERROR: Could not get latest PID\n");
+        else printe("ERROR: Could not get latest PID\n");
         sleep(interval);
     }
 

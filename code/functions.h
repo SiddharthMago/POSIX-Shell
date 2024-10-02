@@ -77,6 +77,7 @@ int kbhit();
 int get_latest_PID();
 void neonate_function(char* command);
 void iMan_function(char* command);
+void printe(char* error_message);
 
 typedef struct {
     pid_t pid;

@@ -20,7 +20,7 @@ void proclore_function(char *pid, bool background) {
 
     FILE *fp = fopen(path, "r");
     if (fp == NULL) {
-        printf("ERROR: Error opening process stat file\n");
+        printe("ERROR: Error opening process stat file\n");
         printnl();
         return;
     }
@@ -63,7 +63,7 @@ void proclore_function(char *pid, bool background) {
     }
     else {
         if(selfpid != -1) printf("Executable path: ./a.out\n");
-        else printf("ERROR: Unable to read executable path\n");
+        else printe("ERROR: Unable to read executable path\n");
     }
     
     free(path);

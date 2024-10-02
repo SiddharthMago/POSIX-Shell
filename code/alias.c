@@ -13,7 +13,7 @@ void print_aliases(char** alias_file_text, int alias_line_count) {
 char** alias_to_array_helper(char* alias_file_path, int* alias_line_count) {
     FILE* alias_file = fopen(alias_file_path, "r");
     if(alias_file == NULL) {
-        printf("\nERROR: Alias file not found\n\n");
+        printe("\nERROR: Alias file not found\n\n");
         return NULL;
     }
 
@@ -118,7 +118,7 @@ void alias_function(char* command, char* alias_file_path) {
 
     token = strtok(NULL, "=");
     if(token == NULL) {
-        printf("ERROR: Invalid alias command\n");
+        printe("ERROR: Invalid alias command\n");
         printnl();
         return;
     }
@@ -133,7 +133,7 @@ void alias_function(char* command, char* alias_file_path) {
 
     FILE* alias_file = fopen(alias_file_path, "a+");
     if(alias_file == NULL) {
-        printf("ERROR: Alias file not found\n");
+        printe("ERROR: Alias file not found\n");
         printnl();
         return;
     }
