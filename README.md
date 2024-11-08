@@ -4,9 +4,11 @@
 
 ### ./a.out - to run the program executable
 
+
 ## Header File :
 
 ### functions.h - Has all the used libraries, global variables and function defintions. Header file for all c files.
+
 
 ## Functions :
 
@@ -16,11 +18,13 @@
 
 #### 2) int printCLI_with_comtime(int checkdir, char* username, char* hostname, char* homedir, char* curdir, char* command_temp, long elapsed_time_temp) - funtion that prints the CLI when elapsed time of a function > 2s.
 
+
 ### hop.c :
 
 #### 1) int ishomedir(char* curdir, char* homedir) - returns 1 if curdir = homedir, 2 if curdir = homedir + /path and -1 if curdir != homedir.
 
 #### 2) void hop_function(char* command, char* homedir, char* curdir, char* prevdir) - the function that handles the hop command.
+
 
 ### reveal.c :
 
@@ -34,6 +38,7 @@
 
 #### 5) void reveal_function(char* command, char* homedir) - the function that handles the reveal command.
 
+
 ### log.c :
 
 #### 1) char** log_to_array_helper(char* log_file_path, int* log_line_count) - the function to convert the text in the log file to an array for further manipulation.
@@ -46,6 +51,7 @@
 
 #### 5) char* log_function(char* command, char* log_file_path, char** log_file_text, int log_line_count, bool* log_execute_flag) - the function that handles the log commands.
 
+
 ### syscom.c :
 
 #### 1) void syscom_function(char* command, bool background, bool* print_CLI_flag, char** command_temp, long* elapsed_time_temp) - the function that handles system commands like sleep, echo, etc for the terminal using exec().
@@ -56,11 +62,13 @@
 
 #### 1) void proclore_function(char *pid) - the function that handles proclore commands.
 
+
 ### seek.c :
 
 #### 1) int display_info(const char *fpath, const struct stat *sb, int typeflag, struct FTW *ftwbuf) - the function that displays the files/directories we have seeked.
 
 #### 2) void seek_function(char *command, char *homedir) - the function that handles seek command.
+
 
 ### alias.c :
 
@@ -74,11 +82,13 @@
 
 #### NOTE : Alias functionality supports dynamic aliasing.
 
+
 ### redirection-piping.c : file with logic for redirection and piping.
 
 #### 1) char* redirection_function(char* command) - function that is called if there is a '>' in the command and further handles the redirection logic
 
 #### 2) void handle_pipe(char* input, char** alias_file_text, char** log_file_text) - handles the piping logic and the flow of control for pipes.
+
 
 ### activities-ping.c : file with logic for activities and ping functionality.
 
@@ -98,6 +108,7 @@
 
 #### 8) void ping_function(char* command) : function that handles all pings.
 
+
 ### neonate.c : BONUS
 
 #### 1) int get_latest_PID() : function that gets the latest PID from proc file using opendir and pid logic.
@@ -108,11 +119,14 @@
 
 #### 4) void neonate_function(char* command) : function that handles the entire process of neonate.
 
+
 ### networking.c :
 
 #### 1) void iMan_function(char* command) : the function that creates the socket, makes the command, sends it as a request and then recieves the response from the man webpage and finally displays the content in a formatted manner using some basic string manipulation and slicing.
 
+
 ### main-logic.c : shifted the inner loop logic from main.c to main-logic.c to make it more modular and easier to pipe and handle returned commands.
+
 
 ## Implementations :
 
