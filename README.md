@@ -117,22 +117,6 @@
 
 ### main-logic.c : shifted the inner loop logic from main.c to main-logic.c to make it more modular and easier to pipe and handle returned commands.
 
-## Assumptions :
-
-### 1) MAX_LENGTH = 4097 : max length of any command/path is 4096 characters. 
-
-### 2) MAX_PROCESSES = 4097 : max number of background processes is 4096.
-
-### 3) getenv() is allowed to get username - else I have included a comment using getlogin(). --> Later changed, now program uses getlogin().
-
-### 4) MAX_ALIAS_SIZE = 4097
-
-### 5) MAX_SIGNALS = 32
-
-### 6) MAX_PIPE_COMMANDS = 15
-
-### 7) kbhit() was allowed for neonate as otherwise input = EOF in next iteration which causes ctrl+D logic and exits shell.
-
 ## Implementations :
 
 ### 1) If input is interrupted by background process exit message, command is left there, enter can be pressed to refresh the CLI and input is given again.
@@ -150,7 +134,3 @@
 ### 7) Activities are qsorted and displayed based on their PIDs and not lexicographically on names.
 
 ### 8) ctrl+D is only input when there is no fg process running. ctrl+D can be associated with EOF of input and there will be no other such case where EOF will be input.
-
-## Prompts :
-
-### All prompts have been stored in /images. They have been numbered such that images of the same prompt are subnumbered (eg : 6.1, 6.2, 6.31, 6.32 all belong to either the same task or same prompt).
